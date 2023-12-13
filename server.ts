@@ -1,9 +1,9 @@
 import express, { json } from 'express';
 import axios from 'axios';
-
+import { makeApp } from './app';
 import mongoose from 'mongoose';
 
-const app = express();
+const app = makeApp();
 
 app.use(json());
 
@@ -42,6 +42,8 @@ app.get('/exercise/:id', async (req, res) => {
 });
 
 const port = process.env.PORT || 8080;
+
+export const server = {}
 
 mongoose.connect("mongodb://localhost:27017/myapp").then(() => {
     app.listen(port, () => {
