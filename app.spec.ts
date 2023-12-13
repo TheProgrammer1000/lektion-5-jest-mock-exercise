@@ -1,7 +1,9 @@
 import { default as request } from 'supertest';
 import {makeApp} from './app';
 
-const app = makeApp();
+const createProduct = jest.fn();
+
+const app = makeApp({createProduct});
 
 const validProductData = {
   name: "Macbook Pro",
@@ -17,6 +19,17 @@ const invalidProductData = {
 }
 
 describe('POST /product', () => {
+
+  // Innan varje it eller test i describen körs så körs beforeEach 
+  beforeEach(() => {
+    createProduct.mockRestore();
+    // Låtsas att detta är svaret vi får från den här metoden.
+    createProduct.mockResolvedValue({ name: 'MackBook Pro',
+      description: 'Reasonably priced laptop',
+      price: 1800,
+      currency: 'USD'});
+  })
+
   it("should return status code 200 when posting product with valid data", async () => {
     const response = await request(app).post("/product").send(validProductData);
     expect(response.statusCode).toBe(200);
@@ -27,10 +40,9 @@ describe('POST /product', () => {
     expect(response.statusCode).toBe(400);
   })
 
-  it('should call createProduct 1 time', (
-
-  ) => {
-    expect(true).toBe(false);
+  it('should call createProduct 1 time', async () => {
+    const response = await request(app).post("/product").send(validProductData);
+    expect(createProduct.mock.calls.length).toBe(1)
   })
 
 

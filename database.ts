@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-type ProductType = {
+export type ProductType = {
   name: string,
   description: string,
   price: number,
@@ -15,4 +15,8 @@ const productSchema = new mongoose.Schema<ProductType>({
 });
 
 const ProductModel = mongoose.model('product', productSchema);
+
+export const createProduct = async(productData: ProductType) => {
+  return await (new ProductModel(productData).save());
+};
 
