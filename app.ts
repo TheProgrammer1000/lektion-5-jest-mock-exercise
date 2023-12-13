@@ -1,11 +1,13 @@
 import express, {json} from "express";
-import { ProductType } from "./database";
+import { ProductType, isValidId } from "./database";
+import { convertCurrencytFromUSDToSEK } from "./currency";
 
 type AppProps = {
-  createProduct: (productData: ProductType) => ProductType
+  createProduct: (productData: ProductType) => any;
+  getProductById: (id: string) => any;
 }
 
-export const makeApp = ({createProduct}: AppProps) => {
+export const makeApp = ({createProduct, getProductById}: AppProps) => {
   const app = express();
 
   app.use(json())
@@ -36,5 +38,15 @@ export const makeApp = ({createProduct}: AppProps) => {
     }
   });
 
+  app.get('/product/:id', async (req, res) => {
+    if (!isValidId(req.params.id)) {
+      res.status(400).send();
+    } else {
+      const product = await getProductById(req.params.id);
+      const priceInSEK = await convertCurrencytFromUSDToSEK(product.price);
+      res.json({ ...product, priceInSEK });
+    }
+  });
+  
   return app;
 };

@@ -20,3 +20,9 @@ export const createProduct = async(productData: ProductType) => {
   return await (new ProductModel(productData).save());
 };
 
+export const getProductById = async (id: string) => {
+  return await ProductModel.findById(id);
+}
+
+export const isValidId = (id: string) => mongoose.Types.ObjectId.isValid(id);
+
